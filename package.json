@@ -18,12 +18,12 @@
   },
   "homepage": "https://github.com/nadavoosh/koa-passport-saml-example#readme",
   "dependencies": {
-    "koa": "^2.3.0",
-    "koa-body": "^2.3.0",
-    "koa-generic-session": "^2.0.0",
-    "koa-passport": "^3.0.0",
-    "koa-router": "^7.2.1",
-    "passport": "^0.3.2",
-    "passport-saml": "^0.15.0"
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-generic-session": "^2.1.1",
+    "koa-passport": "^4.1.4",
+    "koa-router": "^9.4.0",
+    "passport": "^0.4.1",
+    "passport-saml": "^3.2.0"
   }
 }

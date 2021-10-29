@@ -9,12 +9,23 @@ const koaBody = require('koa-body');
 
 const app = new Koa();
 
+const cookieKey = 'my-cookie-name-prefix';
+
 // passpport
 app.use(koaPassport.initialize());
 
 // sessions
 app.keys = ['your-session-secret'];
-app.use(session({}));
+app.use(session({
+  key: cookieKey,
+  cookie: {
+      path: '/',
+      httpOnly: true,
+      maxAge: 30 * 60 * 1000, // 30 mins
+      overwrite: true,
+      signed: true
+  }
+}));
 app.use(koaPassport.session());
 
 // body parser
@@ -35,6 +46,21 @@ const authMiddleware = async (ctx, next) => {
 const authRouter = new Router();
 authRouter.get('/auth/login', koaPassport.authenticate('saml'));
 authRouter.post('/auth/saml/callback', koaPassport.authenticate('saml'), ctx => ctx.redirect('/'));
+
+authRouter.post('/auth/saml/logout/callback', koaPassport.logoutSamlCallback);
+
+authRouter.post('/auth/logout', async (ctx, next) => {
+    console.log('[app.js] Receive the /auth/logout request, start to destroy session and delete cookie');
+    ctx.session = null;
+    ctx.cookies.set(cookieKey, null);
+    ctx.cookies.set(`${cookieKey}.sig`, null);
+    await next();
+  },
+  koaPassport.authenticate('saml'), 
+  async (ctx, next) => {
+      console.log('[app.js] Finish the logout and start to redirect');
+      ctx.redirect('/');
+  });
 
 // other routes - these require authentication!
 const router = new Router();
